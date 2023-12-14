@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+import uvloop
 from pyrogram import Client, filters
 from pyrogram.enums import ChatType, ChatMemberStatus
 from pyrogram.errors import FloodWait
@@ -14,6 +15,8 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+uvloop.install()
 
 bot = Client(name="kickmemberbot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -60,8 +63,10 @@ async def kick_all_members(cl: Client, m: Message):
                         continue
                     elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                         continue
-                    join_time = datetime.utcfromtimestamp(member.user.status.date)
-                    if datetime.utcnow() - join_time > timedelta(hours=2):
+                    last_online_date = None
+                    if member.user.status:
+                        last_online_date = member.user.status.last_online_date
+                    if last_online_date and (datetime.utcnow() - datetime.utcfromtimestamp(last_online_date) > timedelta(hours=2)):
                         try:
                             await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                             kick_count += 1
@@ -77,8 +82,10 @@ async def kick_all_members(cl: Client, m: Message):
                             continue
                         elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                             continue
-                        join_time = datetime.utcfromtimestamp(member.user.status.date)
-                        if datetime.utcnow() - join_time > timedelta(hours=2):
+                        last_online_date = None
+                        if member.user.status:
+                            last_online_date = member.user.status.last_online_date
+                        if last_online_date and (datetime.utcnow() - datetime.utcfromtimestamp(last_online_date) > timedelta(hours=2)):
                             try:
                                 await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                                 kick_count += 1
