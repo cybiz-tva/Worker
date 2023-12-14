@@ -14,7 +14,7 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 uvloop.install()
 
@@ -30,10 +30,10 @@ async def start_bot(cl: Client, m: Message):
                               url=f"tg://resolve?domain={cl.me.username}&startgroup=&admin=manage_chat+restrict_members")],
         [InlineKeyboardButton(text="➕ Add me to a channel",
                               url=f"tg://resolve?domain={cl.me.username}&startchannel&admin=change_info+restrict_members+post_messages")],
-        [InlineKeyboardButton(text="📦 Public Repository", url="https://github.com/cybiz-tva")]
+        [InlineKeyboardButton(text="📦 Public Repository", url="https://github.com/samuelmarc/kickallmembersbot")]
     ])
     await m.reply(
-        f"Hello {m.from_user.mention} I am a bot to remove (not ban) all users from your group or channel created by cybiz, below you can add the bot to your group or channel or access the bot's public repository .",
+        f"Hello {m.from_user.mention} I am a bot to remove (not ban) all users from your group or channel created by @samuel_ks, below you can add the bot to your group or channel or access the bot's public repository .",
         reply_markup=keyboard)
 
 
@@ -63,13 +63,11 @@ async def kick_all_members(cl: Client, m: Message):
                         continue
                     elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                         continue
-                    join_time = datetime.utcfromtimestamp(member.user.status.date)
-                    if datetime.utcnow() - join_time < timedelta(hours=1):
-                        try:
-                            await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
-                            kick_count += 1
-                        except FloodWait as e:
-                            await asyncio.sleep(e.value)
+                    try:
+                        await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
+                        kick_count += 1
+                    except FloodWait as e:
+                        await asyncio.sleep(e.value)
                 await m.reply(f"✅ Total Users Removed: {kick_count}")
             else:
                 loops_count = members_count / 200
@@ -80,13 +78,11 @@ async def kick_all_members(cl: Client, m: Message):
                             continue
                         elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                             continue
-                        join_time = datetime.utcfromtimestamp(member.user.status.date)
-                        if datetime.utcnow() - join_time < timedelta(hours=10):
-                            try:
-                                await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
-                                kick_count += 1
-                            except FloodWait as e:
-                                await asyncio.sleep(e.value)
+                        try:
+                            await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
+                            kick_count += 1
+                        except FloodWait as e:
+                            await asyncio.sleep(e.value)
                     await asyncio.sleep(15)
                 await m.reply(f"✅ Total Users Removed: {kick_count}")
         else:
