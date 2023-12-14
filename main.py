@@ -64,7 +64,7 @@ async def kick_all_members(cl: Client, m: Message):
                     elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                         continue
                     join_time = datetime.utcfromtimestamp(member.user.status.date)
-                    if datetime.utcnow() - join_time < timedelta(minutes=10):
+                    if datetime.utcnow() - join_time < timedelta(hours=1):
                         try:
                             await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                             kick_count += 1
@@ -81,7 +81,7 @@ async def kick_all_members(cl: Client, m: Message):
                         elif member.status == ChatMemberStatus.ADMINISTRATOR or member.status == ChatMemberStatus.OWNER:
                             continue
                         join_time = datetime.utcfromtimestamp(member.user.status.date)
-                        if datetime.utcnow() - join_time < timedelta(minutes=10):
+                        if datetime.utcnow() - join_time < timedelta(hours=10):
                             try:
                                 await chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                                 kick_count += 1
